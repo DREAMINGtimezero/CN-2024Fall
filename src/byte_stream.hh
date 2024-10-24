@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <queue>
 #include <string>
 #include <string_view>
 
@@ -23,7 +24,21 @@ public:
 
 protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
+  // 用于存储字节流的缓冲区，按顺序保存被推送的数据
+  std::queue<std::string> stream_ {};
+  // 记录从流中弹出的前缀字节数
+  uint64_t removed_prefix_ {};
+  // 最大容量，限制字节流可占用的内存大小
   uint64_t capacity_;
+  // 总共弹出的字节数
+  uint64_t total_popped_ {};
+  // 总共推送的字节数
+  uint64_t total_pushed_ {};
+  // 当前缓冲区中的字节数
+  uint64_t total_buffered_ {};
+  // 提示流是否被关闭
+  bool closed_ {};
+  // 错误标志
   bool error_ {};
 };
 
