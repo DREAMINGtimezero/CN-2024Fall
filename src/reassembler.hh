@@ -2,9 +2,9 @@
 
 #include "byte_stream.hh"
 
-#include<cstdint>
-#include<map>
-#include<optional>
+#include <cstdint>
+#include <map>
+#include <optional>
 
 class Reassembler
 {
@@ -47,12 +47,11 @@ public:
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
 
-  std::map<uint64_t, std::string> buf_ {};
-  uint64_t total_pending_ {};
+  std::map<uint64_t, std::string> buf_ {};//存储待组装的数据
 
-  std::optional<uint64_t> end_index_ {};
+  uint64_t total_pending_ {};//当前待处理的字节数
+
+  std::optional<uint64_t> end_index_ {};//可选的结束索引，表示数据的结束位置
 
   auto split( uint64_t pos ) noexcept;
-
-  
 };
