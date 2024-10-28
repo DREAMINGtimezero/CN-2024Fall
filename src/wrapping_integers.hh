@@ -30,4 +30,7 @@ public:
 
 protected:
   uint32_t raw_value_ {};
+  static constexpr uint64_t MASK_LOW_32 { 0x0000'0000'FFFF'FFFF };// 低32位
+  static constexpr uint64_t MASK_HIGH_32 { 0xFFFF'FFFF'0000'0000 };// 高32位
+  static constexpr uint64_t BASE { MASK_LOW_32 + 1 };//模=2^32
 };
