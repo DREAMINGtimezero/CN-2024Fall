@@ -5,6 +5,8 @@
 #include <span>
 #include <string>
 
+#include "tcp_minnow_socket_impl.hh"
+
 using namespace std;
 
 void get_URL( const string& host, const string& path )
