@@ -1,8 +1,15 @@
 #pragma once
 
+#include <array>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
+
+#include "address.hh"
 #include "exception.hh"
 #include "network_interface.hh"
 
@@ -11,6 +18,7 @@
 class Router
 {
 public:
+ // 向路由器添加一个网络接口
   // Add an interface to the router
   // \param[in] interface an already-constructed network interface
   // \returns The index of the interface after it has been added to the router
@@ -35,4 +43,10 @@ public:
 private:
   // The router's collection of network interfaces
   std::vector<std::shared_ptr<NetworkInterface>> _interfaces {};
+  
+ // 路由表，存储了32个路由表项，每个表项是一个unordered_map
+   using info = std::pair<size_t, std::optional<Address>>;
+  std::array<std::unordered_map<uint32_t, info>, 32> routing_table_ {};
+// 根据路由前缀匹配路由
+  [[nodiscard]] auto match( uint32_t ) const noexcept -> std::optional<info>;
 };
