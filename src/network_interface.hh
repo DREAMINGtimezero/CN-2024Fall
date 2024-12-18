@@ -3,8 +3,15 @@
 #include <queue>
 
 #include "address.hh"
+#include "arp_message.hh"
 #include "ethernet_frame.hh"
+#include "ethernet_header.hh"
 #include "ipv4_datagram.hh"
+#include <cstddef>
+#include <cstdint>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 // A "network interface" that connects IP (the internet layer, or network layer)
 // with Ethernet (the network access layer, or link layer).
@@ -81,4 +88,26 @@ private:
 
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
+
+  auto make_arp( uint16_t, const EthernetAddress&, uint32_t ) const noexcept -> ARPMessage;
+
+  static constexpr size_t ARP_ENTRY_TTL_ms { 30'000 };
+  static constexpr size_t ARP_RESPONSE_TTL_ms { 5'000 };
+
+  // 检查 TTL 是否过期
+  struct Timer
+  {
+    size_t _ms {};
+    constexpr Timer& tick( const size_t& ms_since_last_tick ) noexcept
+    {
+      return _ms += ms_since_last_tick, *this;
+    } // 更新时间
+    [[nodiscard]] constexpr bool expired( const size_t& TTL_ms ) const noexcept { return _ms >= TTL_ms; }
+  };
+
+  // 存储待处理的数据报，按 IP 地址分类
+  using AddressNumeric = decltype( ip_address_.ipv4_numeric() );
+  std::unordered_map<AddressNumeric, std::vector<InternetDatagram>> dgrams_waitting_ {};
+  std::unordered_map<AddressNumeric, Timer> waitting_timer_ {};
+  std::unordered_map<AddressNumeric, std::pair<EthernetAddress, Timer>> ARP_cache_ {};
 };
